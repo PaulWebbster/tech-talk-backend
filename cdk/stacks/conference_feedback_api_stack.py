@@ -1,8 +1,10 @@
 from aws_cdk import (
     Stack,
     aws_lambda as _lambda,
+    aws_iam as iam,
 )
 from constructs import Construct
+import json
 
 class ConferenceFeedbackApiStack(Stack):
 
@@ -28,4 +30,16 @@ class ConferenceFeedbackApiStack(Stack):
             environment={
                 "AWS_ACCOUNT_ID": "585994675900"
             }
-        ) 
+        )
+
+        # Load the policy from the JSON file
+        with open('dynamodb_policy.json') as f:
+            policy_document = json.load(f)
+
+        # Create a policy from the document
+        policy = iam.Policy(self, "DynamoDBPolicy",
+            document=iam.PolicyDocument.from_json(policy_document)
+        )
+
+        # Attach the policy to the Lambda function
+        lambda_function.role.attach_inline_policy(policy)

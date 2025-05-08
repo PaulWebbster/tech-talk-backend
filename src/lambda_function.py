@@ -1,21 +1,19 @@
 import json
-from pydantic import BaseModel
-from aws_lambda_powertools import Logger
 import boto3
+from boto3.dynamodb.conditions import Key
 
-logger = Logger()
-
-class InputModel(BaseModel):
-    key: str
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('conferences')
 
 def lambda_handler(event, context):
-    logger.info("Received event: %s", json.dumps(event))
-    
-    input_data = InputModel(**event)
-    
-    client = boto3.client('rds-data')
-    
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    } 
+    if event['httpMethod'] == 'GET' and event['path'] == '/conferences':
+        response = table.scan()
+        return {
+            'statusCode': 200,
+            'body': response['Items']
+        }
+    else:
+        return {
+            'statusCode': 400,
+            'body': json.dumps('Unsupported method or path')
+        } 
