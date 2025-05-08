@@ -52,6 +52,24 @@ def lambda_handler(event, context):
             'body': json.dumps('Feedback submitted successfully')
         }
     
+    elif http_method == 'GET' and path.startswith('/conferences/') and path.endswith('/rating'):
+        # Extract conference ID from the path
+        conference_id = path.split('/')[2]
+        
+        # Query the ratings table for the given conference ID
+        response = ratings_table.query(
+            KeyConditionExpression=Key('conferenceId').eq(conference_id)
+        )
+        
+        # Calculate the overall rating
+        ratings = [item['rating'] for item in response['Items']]
+        overall_rating = float(sum(ratings) / len(ratings)) if ratings else 0.0
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps(overall_rating)
+        }
+    
     else:
         return {
             'statusCode': 400,

@@ -12,7 +12,9 @@
     {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:PutItem"
+        "dynamodb:PutItem",
+        "dynamodb:Scan",
+        "dynamodb:Query"
       ],
       "Resource": "arn:aws:dynamodb:eu-west-1:585994675900:table/ratings"
     }
