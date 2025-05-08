@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         response = conferences_table.scan()
         return {
             'statusCode': 200,
-            'body': response['Items']
+            'body': json.dumps(response['Items'])
         }
     
     elif http_method == 'POST' and path == '/feedback':

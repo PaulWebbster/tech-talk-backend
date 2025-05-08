@@ -45,11 +45,16 @@ class ConferenceFeedbackApiStack(Stack):
         # Attach the policy to the Lambda function
         lambda_function.role.attach_inline_policy(policy)
 
-        # Create a function URL for the Lambda function
+        # Create a function URL for the Lambda function with CORS
         function_url = lambda_.FunctionUrl(
             self, "FunctionUrl",
             function=lambda_function,
-            auth_type=lambda_.FunctionUrlAuthType.NONE  # Set to NONE for public access
+            auth_type=lambda_.FunctionUrlAuthType.NONE,  # Set to NONE for public access
+            cors=lambda_.FunctionUrlCorsOptions(
+                allowed_origins=["*"],  # Adjust as needed
+                allowed_methods=[lambda_.HttpMethod.GET, lambda_.HttpMethod.POST],
+                allowed_headers=["*"]
+            )
         )
 
         # Output the function URL
