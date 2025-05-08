@@ -19,3 +19,4 @@ include = "src"
 
 [tool.poetry.scripts]
 build = "scripts.build_layer:main"
+populate-db = "scripts.populate_conference_database:main"
