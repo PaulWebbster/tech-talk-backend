@@ -3,6 +3,7 @@ import boto3
 import logging
 import uuid
 from boto3.dynamodb.conditions import Key
+from decimal import Decimal
 
 # Set up logging
 logger = logging.getLogger()
@@ -11,6 +12,11 @@ logger.setLevel(logging.INFO)
 dynamodb = boto3.resource('dynamodb')
 conferences_table = dynamodb.Table('conferences')
 ratings_table = dynamodb.Table('ratings')
+
+def decimal_to_float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
 
 def lambda_handler(event, context):
     # Log the incoming event
@@ -24,7 +30,7 @@ def lambda_handler(event, context):
         response = conferences_table.scan()
         return {
             'statusCode': 200,
-            'body': json.dumps(response['Items'])
+            'body': json.dumps(response['Items'], default=decimal_to_float)
         }
     
     elif http_method == 'POST' and path == '/feedback':
@@ -42,7 +48,7 @@ def lambda_handler(event, context):
             Item={
                 'conferenceId': conference_id,
                 'ratingId': rating_id,
-                'rating': rating,
+                'rating': Decimal(str(rating)),
                 'comment': comment
             }
         )
@@ -68,6 +74,26 @@ def lambda_handler(event, context):
         return {
             'statusCode': 200,
             'body': json.dumps(overall_rating)
+        }
+    
+    elif http_method == 'GET' and path.startswith('/conferences/') and path.endswith('/comments'):
+        # Extract conference ID from the path
+        conference_id = path.split('/')[2]
+        
+        # Query the ratings table for the given conference ID
+        response = ratings_table.query(
+            KeyConditionExpression=Key('conferenceId').eq(conference_id)
+        )
+        
+        # Extract comments and ratings
+        comments_with_ratings = [
+            {'rating': float(item['rating']), 'comment': item['comment']}
+            for item in response['Items']
+        ]
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps(comments_with_ratings, default=decimal_to_float)
         }
     
     else:
