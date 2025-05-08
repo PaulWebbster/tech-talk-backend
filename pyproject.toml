@@ -5,7 +5,7 @@ description = "API for conference feedback"
 authors = ["Pawel Weber <pawel.weber@holisticon.pl>"]
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "3.11.11"
 pydantic = "^1.10.2"
 aws-lambda-powertools = "^1.24.0"
 boto3 = "^1.26.0"
@@ -16,3 +16,6 @@ build-backend = "poetry.core.masonry.api"
 
 [[tool.poetry.packages]]
 include = "src"
+
+[tool.poetry.scripts]
+build = "scripts.build_layer:main"
