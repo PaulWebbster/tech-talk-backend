@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "conference-feedback-api"
+version = "0.1.0"
+description = "API for conference feedback"
+authors = ["Pawel Weber <pawel.weber@holisticon.pl>"]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pydantic = "^1.10.2"
+aws-lambda-powertools = "^1.24.0"
+boto3 = "^1.26.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[[tool.poetry.packages]]
+include = "src"
