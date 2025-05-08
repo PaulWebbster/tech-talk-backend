@@ -2,6 +2,7 @@ from aws_cdk import (
     Stack,
     aws_lambda as _lambda,
     aws_iam as iam,
+    aws_lambda as lambda_
 )
 from constructs import Construct
 import json
@@ -43,3 +44,13 @@ class ConferenceFeedbackApiStack(Stack):
 
         # Attach the policy to the Lambda function
         lambda_function.role.attach_inline_policy(policy)
+
+        # Create a function URL for the Lambda function
+        function_url = lambda_.FunctionUrl(
+            self, "FunctionUrl",
+            function=lambda_function,
+            auth_type=lambda_.FunctionUrlAuthType.NONE  # Set to NONE for public access
+        )
+
+        # Output the function URL
+        self.url_output = function_url.url
